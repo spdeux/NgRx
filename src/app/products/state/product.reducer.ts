@@ -11,13 +11,15 @@ export interface State extends fromRoot.State {  //lazy loding
 export interface ProductState {
   showProductCode: boolean,
   currentProduct: Product,
-  products: Product[]
+  products: Product[],
+  error: string
 }
 
 const initialState: ProductState = {  //initialize productSate
   showProductCode: true,
   currentProduct: null,
-  products: []
+  products: [],
+  error: ''
 }
 
 ////////////////////////////////////define selector////////////////////////////////////
@@ -36,6 +38,11 @@ export const getCurrentProduct = createSelector( //create selectore for currentP
 export const getProducts = createSelector( //create selectore for products
   getProductFeatureState,
   state => state.products
+)
+
+export const getError = createSelector( //create selector for error
+  getProductFeatureState,
+  state => state.error
 )
 /////////////////////////////////////define reducer////////////////////////////////
 export function reducer(state: ProductState = initialState, action: ProductActions): ProductState {  //strongly typed state & actions
@@ -67,6 +74,20 @@ export function reducer(state: ProductState = initialState, action: ProductActio
           starRating: 0
         }
       };
+
+    case ProductActionTypes.LoadSuccess:
+      return {
+        ...state,
+        products: action.payload,
+        error: ''
+      }
+
+    case ProductActionTypes.LoadFail:
+      return {
+        ...state,
+        products: [],
+        error: action.payload
+      }
 
     default:
       return state;
